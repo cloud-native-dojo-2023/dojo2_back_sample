@@ -57,4 +57,4 @@ News_list = [
 
 @app.get("/News")
 async def news():
-    return sorted(News_list, reverse=True)
+    return News_list
