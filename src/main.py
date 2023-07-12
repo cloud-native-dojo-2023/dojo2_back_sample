@@ -1,5 +1,11 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from tango_kaiseki import split_noun
+from tango_kaiseki import mrp_analisys
+from tango_kaiseki import cleanning
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
 
 app = FastAPI()
 
@@ -41,7 +47,7 @@ News_list = [
     {
         "Date":"2024/1/5", "Title":"生放送スペシャルイベント開催決定！",
         "Description":"""新年を迎え、1月20日に生放送スペシャルイベントを行います。新曲のステージパフォーマンスやメンバーの生トークをお届けします。""",
-        "Url":"http://localhost/news8"
+   "Url":"http://localhost/news8"
     },
     {
         "Date":"2024/2/10", "Title": "ライブツアー追加公演のお知らせ",
@@ -56,5 +62,43 @@ News_list = [
 ]
 
 @app.get("/News")
-async def news():
-    return News_list
+def news():
+    res_list = []
+
+    doclist = []
+
+    for i, news in enumerate(News_list):
+
+        myword = ''
+
+        for word in [v[0] for v in mrp_analisys(cleanning(news["Description"]))]:
+            myword += word + ' '
+        
+        doclist.append(myword)
+
+        res_list.append({"kanrendo":0, "level":0})
+
+    tfidf = TfidfVectorizer()
+
+    X = tfidf.fit_transform(doclist)
+
+    Xarray = X.toarray()
+
+    ruijido = cosine_similarity(Xarray)
+
+    for i, v in enumerate(ruijido[0]):
+        level = 0
+        if (0.075*4) <= v:
+            level = 1
+        elif (0.075*3) <= v < (0.075*4):
+            level = 2
+        elif (0.075*2) <= v < (0.075*3):
+            level = 3
+        elif (0.075) <= v < (0.075*2):
+            level = 4
+        else:
+            level = 5
+        res_list[i]['kanrendo'] = v
+        res_list[i]['level'] = level
+    
+    return res_list
