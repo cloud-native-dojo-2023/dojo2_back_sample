@@ -162,20 +162,20 @@ def news():
     doc_dict_list = [('-', mrp_serialize, dt_now.strftime('%Y/%m/%d'))] + all_description
     doc_list = [v[1] for v in doc_dict_list]
 
-    res_list = [{'Title':v[0], 'level':0} for v in all_description]
+    res_list = [{'Title':v[0], 'level':0} for v in doc_dict_list[1:]]
 
     X = tfidf.fit_transform(doc_list)
 
     Xarray = X.toarray()
 
     ruijido = cosine_similarity(Xarray)
-    time_passed = [(datetime.datetime.now()-datetime.datetime.strptime(t[2], '%Y/%m/%d')).days for t in doc_dict_list]
-    time_weighted = [v*time_weight(365,t) for v, t in zip(ruijido[0], time_passed)]
+    time_passed = [(datetime.datetime.now()-datetime.datetime.strptime(t[2], '%Y/%m/%d')).days for t in doc_dict_list[1:]]
+    time_weighted = [v*time_weight(365,t) for v, t in zip(ruijido[0][1:], time_passed)]
 
-    max_ruijido = max(time_weighted[1:])
+    max_ruijido = max(time_weighted)
     max_ruijido_quartor = max_ruijido/4
 
-    for i, v in enumerate(time_weighted[1:]):
+    for i, v in enumerate(time_weighted):
         level = 0
         if (max_ruijido_quartor*4) <= v:
             level = 1
