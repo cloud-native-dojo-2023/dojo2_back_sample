@@ -157,7 +157,7 @@ def news():
 
     doc_dict_list = [('-', mrp_serialize)] + all_description
     doc_list = [v[1] for v in doc_dict_list]
-    res_list = [{'Title':v[0], 'kanrendo':0, 'level':0} for v in all_description]
+    res_list = [{'Title':v[0], 'level':0} for v in all_description]
 
     X = tfidf.fit_transform(doc_list)
 
@@ -180,7 +180,6 @@ def news():
             level = 4
         else:
             level = 5
-        res_list[i]['kanrendo'] = v
         res_list[i]['level'] = level
     
     return res_list
