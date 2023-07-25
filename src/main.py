@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from random import randint
+import datetime
 import redis as rds
 import hashlib as hl
 import Register
@@ -84,42 +85,42 @@ news2 = [
         "Description":"""今年もやってきました！私たちのライブイベントが7月15日に開催されます。新曲の披露や特別なパフォーマンスをお見逃しなく！""",
         "Url":"http://localhost/news2"},
     {
-        "Date":"2023/8/10", "Title":"新アルバム『夢幻の旅』発売決定！",
+        "Date":"2022/8/10", "Title":"新アルバム『夢幻の旅』発売決定！",
         "Description":""""待望の新アルバム『夢幻の旅』が9月1日に発売されます。全曲ライブで披露する予定ですので、ぜひお楽しみに！""",
         "Url":"http://localhost/news3"
     },
     {
-        "Date":"2023/9/5", "Title":"生放送のお知らせ！",
+        "Date":"2022/9/5", "Title":"生放送のお知らせ！",
         "Description":"""9月20日に特別な生放送があります。新曲の初披露やメンバーとのトークが盛りだくさん！お見逃しなく！""",
         "Url":"http://localhost/news4"
     },
     {
-        "Date":"2023/10/1", "Title":"ライブツアー開催決定！",
+        "Date":"2022/10/1", "Title":"ライブツアー開催決定！",
         "Description":"""全国ツアーの開催が決定しました！各地で熱いパフォーマンスをお届けします。日程とチケット情報は公式サイトをご確認ください。""",
         "Url":"http://localhost/news5"
     },
     {
-        "Date":"2023/10/20", "Title":"CDリリース記念イベントのお知らせ",
+        "Date":"2022/10/20", "Title":"CDリリース記念イベントのお知らせ",
         "Description":"""新アルバムのリリースを記念して、11月5日にイベントを開催します！メンバーとの握手会や特典付きのCD購入が可能です。""",
         "Url":"http://localhost/news6"
     },
     {
-        "Date":"2023/11/15", "Title":"新曲「夢の翼」のCD発売が決定しました！",
+        "Date":"2022/11/15", "Title":"新曲「夢の翼」のCD発売が決定しました！",
         "Description":"""待望の新曲「夢の翼」のCDが12月1日に発売されます。心躍るメロディと感動の歌詞をお楽しみください！""",
         "Url":"http://localhost/news7"
     },
     {
-        "Date":"2024/1/5", "Title":"生放送スペシャルイベント開催決定！",
+        "Date":"2022/1/5", "Title":"生放送スペシャルイベント開催決定！",
         "Description":"""新年を迎え、1月20日に生放送スペシャルイベントを行います。新曲のステージパフォーマンスやメンバーの生トークをお届けします。""",
         "Url":"http://localhost/news8"
     },
     {
-        "Date":"2024/2/10", "Title": "ライブツアー追加公演のお知らせ",
+        "Date":"2023/2/10", "Title": "ライブツアー追加公演のお知らせ",
         "Description":"""大好評につき、ライブツアーの追加公演が決定しました！追加公演の詳細やチケットの販売情報は公式サイトでご確認ください。""",
         "Url":"http://localhost/news9"
     },
     {
-        "Date":"2024/3/15", "Title": "新曲MV公開＆CD発売情報",
+        "Date":"2023/3/15", "Title": "新曲MV公開＆CD発売情報",
         "Description":"""新曲「未来への一歩」のMVが完成しました！さらに、CDの発売も同時に決定しましたので、ぜひチェックしてください。""",
         "Url":"http://localhost/news10"
     }
@@ -153,10 +154,14 @@ def news():
 
     #見ていないものだけを抽出する
     all_news = [v.decode() for v in my_rds.scan_iter(match='*') if not(v.decode() in random_news)]
-    all_description = [(my_rds.hget(v,'Title').decode(),my_rds.hget(v,'Noun').decode()) for v in all_news]
+    all_description = [(my_rds.hget(v,'Title').decode(),my_rds.hget(v,'Noun').decode(),my_rds.hget(v,'Date').decode()) for v in all_news]
 
-    doc_dict_list = [('-', mrp_serialize)] + all_description
+
+
+    dt_now = datetime.datetime.now()
+    doc_dict_list = [('-', mrp_serialize, dt_now.strftime('%Y/%m/%d'))] + all_description
     doc_list = [v[1] for v in doc_dict_list]
+
     res_list = [{'Title':v[0], 'level':0} for v in all_description]
 
     X = tfidf.fit_transform(doc_list)
@@ -164,11 +169,13 @@ def news():
     Xarray = X.toarray()
 
     ruijido = cosine_similarity(Xarray)
+    time_passed = [(datetime.datetime.now()-datetime.datetime.strptime(t[2], '%Y/%m/%d')).days for t in doc_dict_list]
+    time_weighted = [v*time_weight(365,t) for v, t in zip(ruijido[0], time_passed)]
 
-    max_ruijido = max(ruijido[0][1:])
+    max_ruijido = max(time_weighted[1:])
     max_ruijido_quartor = max_ruijido/4
 
-    for i, v in enumerate(ruijido[0][1:]):
+    for i, v in enumerate(time_weighted[1:]):
         level = 0
         if (max_ruijido_quartor*4) <= v:
             level = 1
@@ -183,6 +190,12 @@ def news():
         res_list[i]['level'] = level
     
     return res_list
+
+def time_weight(max_day, x):
+    if max_day <= x:
+        return 0
+    return (1/(x+1)) - (1/(max_day+1))
+    
 def main():
     """ my_register1 = Register.Register(news1)
     my_register1.register_noun()

@@ -18,5 +18,5 @@ class Register:
             for word in [v[0] for v in tk.split_noun(tk.cleanning(news["Description"]))]:
                 myword += word + ' '
 
-            rhandler.hmset(myhash, {'Title':news['Title'], 'Noun':myword})
+            rhandler.hmset(myhash, {'Title':news['Title'], 'Noun':myword, 'Date':news['Date']})
 
