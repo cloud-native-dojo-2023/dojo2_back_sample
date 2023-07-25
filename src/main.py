@@ -1,4 +1,9 @@
 from fastapi import FastAPI
+from random import randint
+import redis as rds
+import hashlib as hl
+import Register
+import uvicorn
 from pydantic import BaseModel
 from tango_kaiseki import split_noun
 from tango_kaiseki import mrp_analisys
@@ -6,10 +11,69 @@ from tango_kaiseki import cleanning
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-
-app = FastAPI()
-
-News_list = [
+news1 = [
+    {
+        "Date": "2023/6/15",
+        "Title": "【重要】新曲リリース＆生放送決定！",
+        "Description": "皆様への感謝の気持ちを込めて、新曲のCD発売が決定しました！さらに、リリース記念として生放送も行います。お楽しみに！",
+        "Url": "http://localhost/news1"
+    },
+    {
+        "Date": "2023/6/18",
+        "Title": "🎵 サマーフェス開催決定！",
+        "Description": "熱い夏を盛り上げるため、サマーフェスを開催します！多彩なバンドが出演予定です。お見逃しなく！",
+        "Url": "http://localhost/news2"
+    },
+    {
+        "Date": "2023/6/22",
+        "Title": "【ライブ情報】全国ツアー開催中！",
+        "Description": "全国各地をまわるツアーを開催中です！新曲も披露しますので、ぜひ会場にお越しください！",
+        "Url": "http://localhost/news3"
+    },
+    {
+        "Date": "2023/6/25",
+        "Title": "🎉 ファン感謝イベント開催のお知らせ",
+        "Description": "ファンの皆様への感謝を込めたイベントを開催します！特典やサプライズが満載です。お楽しみに！",
+        "Url": "http://localhost/news4"
+    },
+    {
+        "Date": "2023/6/28",
+        "Title": "【重要】メンバーサプライズ生誕祭開催！",
+        "Description": "メンバーの誕生日をお祝いするスペシャルイベントを行います！お誕生日サプライズも要チェックです。",
+        "Url": "http://localhost/news5"
+    },
+    {
+        "Date": "2023/7/2",
+        "Title": "🎶 新アルバム制作進行中！",
+        "Description": "新しいアルバムの制作が進行中です！新たな音楽で皆様を魅了します。",
+        "Url": "http://localhost/news6"
+    },
+    {
+        "Date": "2023/7/5",
+        "Title": "【チケット発売情報】次回ライブ開催決定！",
+        "Description": "次回のライブ開催が決定しました！チケットの発売は近日中に開始します。",
+        "Url": "http://localhost/news7"
+    },
+    {
+        "Date": "2023/7/9",
+        "Title": "✨ 10周年記念ライブ開催！",
+        "Description": "バンド結成10周年を記念してスペシャルライブを開催します！これまでの感謝を込めて、特別な演出も予定しています。",
+        "Url": "http://localhost/news8"
+    },
+    {
+        "Date": "2023/7/12",
+        "Title": "【お知らせ】メンバーグッズ新発売！",
+        "Description": "新しいメンバーグッズの発売が決定しました！限定アイテムもありますのでお見逃しなく。",
+        "Url": "http://localhost/news9"
+    },
+    {
+        "Date": "2023/7/15",
+        "Title": "🎤 ソロコンサート開催決定！",
+        "Description": "メンバーのソロコンサートを開催します！それぞれの個性が輝くスペシャルなステージになること間違いなし。",
+        "Url": "http://localhost/news10"
+    }
+]
+news2 = [
     {
         "Date":"2023/6/15", "Title":"【重要】新曲リリース＆生放送決定！",
         "Description":"""皆様への感謝の気持ちを込めて、新曲のCD発売が決定しました！さらに、リリース記念として生放送も行います。お楽しみに！""",
@@ -47,7 +111,7 @@ News_list = [
     {
         "Date":"2024/1/5", "Title":"生放送スペシャルイベント開催決定！",
         "Description":"""新年を迎え、1月20日に生放送スペシャルイベントを行います。新曲のステージパフォーマンスやメンバーの生トークをお届けします。""",
-   "Url":"http://localhost/news8"
+        "Url":"http://localhost/news8"
     },
     {
         "Date":"2024/2/10", "Title": "ライブツアー追加公演のお知らせ",
@@ -61,40 +125,58 @@ News_list = [
     }
 ]
 
+
+app = FastAPI()
+
+
 @app.get("/News")
 def news():
-    res_list = []
 
-    doclist = []
+    #ランダムな記事を3つ選択してそれを閲覧した記事とする
+    #閲覧した記事の名詞表現をデータベースから取り出す(ユーザの単語リストとする)
 
-    for i, news in enumerate(News_list):
 
-        myword = ''
+    my_rds = rds.Redis()
+    random_news = [hl.md5(news2[randint(0,len(news2)-1)]['Description'].encode()).hexdigest() for i in range(3)]
 
-        for word in [v[0] for v in mrp_analisys(cleanning(news["Description"]))]:
-            myword += word + ' '
-        
-        doclist.append(myword)
-
-        res_list.append({"kanrendo":0, "level":0})
-
+    random_title_noun = [(my_rds.hget(v,'Title').decode(), my_rds.hget(v,'Noun').decode()) for v in random_news]
+    random_mrp = [v[1] for v in random_title_noun]
+    random_title = [v[0] for v in random_title_noun]
+    print(random_title)
+    mrp_serialize = ''
+    for word in random_mrp:
+        mrp_serialize += word
+    
+    #ここから類似度を計算する
+    
     tfidf = TfidfVectorizer()
 
-    X = tfidf.fit_transform(doclist)
+    #見ていないものだけを抽出する
+    all_news = [v.decode() for v in my_rds.scan_iter(match='*') if not(v.decode() in random_news)]
+    all_description = [(my_rds.hget(v,'Title').decode(),my_rds.hget(v,'Noun').decode()) for v in all_news]
+
+    doc_dict_list = [('-', mrp_serialize)] + all_description
+    doc_list = [v[1] for v in doc_dict_list]
+    res_list = [{'Title':v[0], 'kanrendo':0, 'level':0} for v in all_description]
+
+    X = tfidf.fit_transform(doc_list)
 
     Xarray = X.toarray()
 
     ruijido = cosine_similarity(Xarray)
 
-    for i, v in enumerate(ruijido[0]):
+    max_ruijido = max(ruijido[0][1:])
+    max_ruijido_quartor = max_ruijido/4
+
+    for i, v in enumerate(ruijido[0][1:]):
         level = 0
-        if (0.075*4) <= v:
+        if (max_ruijido_quartor*4) <= v:
             level = 1
-        elif (0.075*3) <= v < (0.075*4):
+        elif (max_ruijido_quartor*3) <= v < (max_ruijido_quartor*4):
             level = 2
-        elif (0.075*2) <= v < (0.075*3):
+        elif (max_ruijido_quartor*2) <= v < (max_ruijido_quartor*3):
             level = 3
-        elif (0.075) <= v < (0.075*2):
+        elif (max_ruijido_quartor) <= v < (max_ruijido_quartor*2):
             level = 4
         else:
             level = 5
@@ -102,3 +184,12 @@ def news():
         res_list[i]['level'] = level
     
     return res_list
+def main():
+    """ my_register1 = Register.Register(news1)
+    my_register1.register_noun()
+    my_register2 = Register.Register(news2)
+    my_register2.register_noun() """
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+if __name__ == "__main__":
+    main()
