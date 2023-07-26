@@ -154,22 +154,22 @@ def news():
 
     #見ていないものだけを抽出する
     all_news = [v.decode() for v in my_rds.scan_iter(match='*') if not(v.decode() in random_news)]
-    all_description = [(my_rds.hget(v,'Title').decode(),my_rds.hget(v,'Noun').decode(),my_rds.hget(v,'Date').decode()) for v in all_news]
+    all_description = [{'Title':my_rds.hget(v,'Title').decode(), 'Noun':my_rds.hget(v,'Noun').decode(), 'Date':my_rds.hget(v,'Date').decode(), 'URL':my_rds.hget(v,'URL')} for v in all_news]
 
 
 
     dt_now = datetime.datetime.now()
-    doc_dict_list = [('-', mrp_serialize, dt_now.strftime('%Y/%m/%d'))] + all_description
-    doc_list = [v[1] for v in doc_dict_list]
+    doc_dict_list = [{'Title':'-', 'Noun':mrp_serialize, 'Date':dt_now.strftime('%Y/%m/%d'), 'URL':'-'}] + all_description
+    doc_list = [v['Noun'] for v in doc_dict_list]
 
-    res_list = [{'Title':v[0], 'level':0} for v in doc_dict_list[1:]]
+    res_list = [{'Title':v['Title'], 'level':0, 'URL':v['URL']} for v in doc_dict_list[1:]]
 
     X = tfidf.fit_transform(doc_list)
 
     Xarray = X.toarray()
 
     ruijido = cosine_similarity(Xarray)
-    time_passed = [(datetime.datetime.now()-datetime.datetime.strptime(t[2], '%Y/%m/%d')).days for t in doc_dict_list[1:]]
+    time_passed = [(datetime.datetime.now()-datetime.datetime.strptime(t['Date'], '%Y/%m/%d')).days for t in doc_dict_list[1:]]
     time_weighted = [v*time_weight(365,t) for v, t in zip(ruijido[0][1:], time_passed)]
 
     max_ruijido = max(time_weighted)
