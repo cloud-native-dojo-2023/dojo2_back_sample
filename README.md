@@ -2,6 +2,9 @@
 
 ## 使い方
 
+Redisを使っているのでこれをインストールする
+https://redis.io/docs/getting-started/installation/
+
 ```
 pip3 install fastapi
 pip3 install uvicorn[standard]
