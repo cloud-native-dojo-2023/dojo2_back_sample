@@ -82,51 +82,51 @@ news2 = [
     {
         "Date":"2023/6/15", "Title":"【重要】新曲リリース＆生放送決定！",
         "Description":"""皆様への感謝の気持ちを込めて、新曲のCD発売が決定しました！さらに、リリース記念として生放送も行います。お楽しみに！""",
-        "Url":"http://192.168.64.2/news/news1"
+        "Url":"http://192.168.64.2/news/news11"
     },
     {
         "Date":"2023/7/2", "Title":"ライブイベント開催のお知らせ",
         "Description":"""今年もやってきました！私たちのライブイベントが7月15日に開催されます。新曲の披露や特別なパフォーマンスをお見逃しなく！""",
-        "Url":"http://192.168.64.2/news/news2"},
+        "Url":"http://192.168.64.2/news/news12"},
     {
         "Date":"1994/8/10", "Title":"新アルバム『夢幻の旅』発売決定！",
         "Description":""""待望の新アルバム『夢幻の旅』が9月1日に発売されます。全曲ライブで披露する予定ですので、ぜひお楽しみに！""",
-        "Url":"http://192.168.64.2/news/news3"
+        "Url":"http://192.168.64.2/news/news13"
     },
     {
         "Date":"2022/9/5", "Title":"生放送のお知らせ！",
         "Description":"""9月20日に特別な生放送があります。新曲の初披露やメンバーとのトークが盛りだくさん！お見逃しなく！""",
-        "Url":"http://192.168.64.2/news/news4"
+        "Url":"http://192.168.64.2/news/news14"
     },
     {
         "Date":"2022/10/1", "Title":"ライブツアー開催決定！",
         "Description":"""全国ツアーの開催が決定しました！各地で熱いパフォーマンスをお届けします。日程とチケット情報は公式サイトをご確認ください。""",
-        "Url":"http://192.168.64.2/news/news5"
+        "Url":"http://192.168.64.2/news/news15"
     },
     {
         "Date":"2022/10/20", "Title":"CDリリース記念イベントのお知らせ",
         "Description":"""新アルバムのリリースを記念して、11月5日にイベントを開催します！メンバーとの握手会や特典付きのCD購入が可能です。""",
-        "Url":"http://192.168.64.2/news/news6"
+        "Url":"http://192.168.64.2/news/news16"
     },
     {
         "Date":"2022/11/15", "Title":"新曲「夢の翼」のCD発売が決定しました！",
         "Description":"""待望の新曲「夢の翼」のCDが12月1日に発売されます。心躍るメロディと感動の歌詞をお楽しみください！""",
-        "Url":"http://192.168.64.2/news/news7"
+        "Url":"http://192.168.64.2/news/news17"
     },
     {
         "Date":"2022/1/5", "Title":"生放送スペシャルイベント開催決定！",
         "Description":"""新年を迎え、1月20日に生放送スペシャルイベントを行います。新曲のステージパフォーマンスやメンバーの生トークをお届けします。""",
-        "Url":"http://192.168.64.2/news/news8"
+        "Url":"http://192.168.64.2/news/news18"
     },
     {
         "Date":"2023/2/10", "Title": "ライブツアー追加公演のお知らせ",
         "Description":"""大好評につき、ライブツアーの追加公演が決定しました！追加公演の詳細やチケットの販売情報は公式サイトでご確認ください。""",
-        "Url":"http://192.168.64.2/news/news9"
+        "Url":"http://192.168.64.2/news/news19"
     },
     {
         "Date":"2023/3/15", "Title": "新曲MV公開＆CD発売情報",
         "Description":"""新曲「未来への一歩」のMVが完成しました！さらに、CDの発売も同時に決定しましたので、ぜひチェックしてください。""",
-        "Url":"http://192.168.64.2/news/news10"
+        "Url":"http://192.168.64.2/news/news20"
     }
 ]
 
@@ -198,9 +198,13 @@ def news(user:UserModel):
 
     Xarray = X.toarray()
 
-    ruijido = cosine_similarity(Xarray)
+    ruijido = [v for v in cosine_similarity(Xarray)[0][1:]]
+    if abs(max(ruijido) - min(ruijido)) <= 0:
+        ruijido = [1 for v in ruijido]
     time_passed = [(datetime.datetime.now()-t['Date']).days for t in doc_dict_list[1:]]
-    time_weighted = [v*time_weight(365,t) for v, t in zip(ruijido[0][1:], time_passed)]
+    time_weighted = [v*time_weight(365,t) for v, t in zip(ruijido, time_passed)]
+
+    print(time_weighted)
 
     max_ruijido = max(time_weighted)
     max_ruijido_quartor = max_ruijido/4
@@ -218,6 +222,7 @@ def news(user:UserModel):
         else:
             level = 5
         res_list[i]['level'] = level
+        print(level)
     
     return res_list
 
@@ -229,7 +234,9 @@ def register(data:RegisterModel):
 
     worddata = my_rds.hget(news_hash,'Noun').decode()
     my_rds.rpush(uid,worddata)
+
     print([v.decode() for v in my_rds.lrange(uid,0,-1)])
+
     return data
 
 def time_weight(max_day, x):
@@ -261,8 +268,9 @@ def main():
     # my_register1.register_noun()
     # my_register2 = Register.Register(news2)
     # my_register2.register_noun()
-    # ur = UserRegister.UserRegister(["test_user1","test_user2", "test_user3"],[[v[1] for v in [(my_rds.hget(v,'Title').decode(), my_rds.hget(v,'Noun').decode()) for v in [hl.md5((news2[i]['Description']+'-'+str(datetime.datetime.strptime(news2[i]['Date'],'%Y/%m/%d').timestamp())).encode()).hexdigest() for i in [randint(0,len(news2)-1) for i in range(3)]]]] for i in range(3)])
-    # ur.register_user()
+    # ur = UserRegister.UserRegister(["test_user_null"],[[v[1] for v in [(my_rds.hget(v,'Title').decode(), my_rds.hget(v,'Noun').decode()) for v in [hl.md5((news2[i]['Description']+'-'+str(datetime.datetime.strptime(news2[i]['Date'],'%Y/%m/%d').timestamp())).encode()).hexdigest() for i in [randint(0,len(news2)-1) for i in range(3)]]]] for i in range(3)])
+    ur = UserRegister.UserRegister(["satou"])
+    ur.register_user()
 
     # my_rds = rds.Redis()
     # test = my_rds.zrevrange('NewsRank',0,-1,withscores=True)
