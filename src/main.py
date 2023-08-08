@@ -15,6 +15,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import UserRegister
+import random 
 
 news1 = [
     {
@@ -192,7 +193,7 @@ def news(user:UserModel):
     doc_dict_list = [{'Title':None, 'Noun':mrp_serialize, 'URL':None, 'Date':datetime.datetime.now(), 'Hash':None}] + all_description
     doc_list = [v['Noun'] for v in doc_dict_list]
 
-    res_list = [{'Title':v['Title'], 'level':0, 'URL':v['URL'], 'Hash':v['Hash']} for v in doc_dict_list[1:]]
+    res_list = [{'Title':v['Title'], 'level':0, 'URL':v['URL'], 'Hash':v['Hash'], 'Date':v['Date']} for v in doc_dict_list[1:]]
 
     X = tfidf.fit_transform(doc_list)
 
@@ -269,7 +270,8 @@ def main():
     # my_register2 = Register.Register(news2)
     # my_register2.register_noun()
     # ur = UserRegister.UserRegister(["test_user_null"],[[v[1] for v in [(my_rds.hget(v,'Title').decode(), my_rds.hget(v,'Noun').decode()) for v in [hl.md5((news2[i]['Description']+'-'+str(datetime.datetime.strptime(news2[i]['Date'],'%Y/%m/%d').timestamp())).encode()).hexdigest() for i in [randint(0,len(news2)-1) for i in range(3)]]]] for i in range(3)])
-    ur = UserRegister.UserRegister(["satou"])
+    
+    ur = UserRegister.UserRegister(["yamasita"])
     ur.register_user()
 
     # my_rds = rds.Redis()
