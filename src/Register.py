@@ -4,12 +4,14 @@ import hashlib as hl
 import datetime
 
 class Register:
-    def __init__(self, News_list) -> None:
+    def __init__(self, News_list, host, port) -> None:
         self.News_list = News_list
+        self.host = host
+        self.port = port
 
     def register_noun(self):
 
-        rhandler = rd.Redis()
+        rhandler = rd.Redis(host=self.host, port=self.port)
         rpipe = rhandler.pipeline()
 
         for i, news in enumerate(self.News_list):

@@ -3,8 +3,26 @@ FROM python:3.11.3-bullseye
 WORKDIR /app
 
 COPY ./requirements.txt /app/
+COPY src/ /app/src/
 
 RUN pip3 install --upgrade pip
 RUN pip3 install -r /app/requirements.txt
 
-CMD ["uvicorn", "src/main:app", "--reload", "--host", "0.0.0.0", "--port", "8080"]
+RUN apt-get -y update && \
+  apt-get -y upgrade && \
+  apt-get install -y mecab && \
+  apt-get install -y libmecab-dev && \
+  apt-get install -y mecab-ipadic-utf8 && \
+  apt-get install -y git && \
+  apt-get install -y make && \
+  apt-get install -y curl && \
+  apt-get install -y xz-utils && \
+  apt-get install -y file && \
+  apt-get install -y sudo
+
+RUN apt install
+
+EXPOSE 8000
+
+#CMD python /app/src/main.py ${END_POINT} ${PORT}
+ENTRYPOINT ["python", "/app/src/main.py"]
