@@ -194,7 +194,7 @@ def news(user:UserModel):
     doc_dict_list = [{'Title':None, 'Noun':mrp_serialize, 'URL':None, 'Date':datetime.datetime.now(), 'Hash':None}] + all_description
     doc_list = [v['Noun'] for v in doc_dict_list]
 
-    res_list = [{'Title':v['Title'], 'level':0, 'URL':v['URL'], 'Hash':v['Hash'], 'Date':v['Date']} for v in doc_dict_list[1:]]
+    res_list = [{'Title':v['Title'], 'level':0, 'URL':v['URL'], 'Hash':v['Hash'], 'Date':v['Date'], 'ruijido':0} for v in doc_dict_list[1:]]
 
     X = tfidf.fit_transform(doc_list)
 
@@ -224,6 +224,7 @@ def news(user:UserModel):
         else:
             level = 5
         res_list[i]['level'] = level
+        res_list[i]['ruijido'] = v
         print(level)
     
     return res_list
