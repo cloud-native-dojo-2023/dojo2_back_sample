@@ -276,7 +276,7 @@ def main():
 
     my_rds.flushdb()
     redis_initialize()
-    ur = UserRegister.UserRegister(redis_endpoint[0],redis_endpoint[1],["yamasita"])
+    ur = UserRegister.UserRegister(redis_endpoint[0],redis_endpoint[1],["yamasita", "tarou", "hanako"])
     ur.register_user()
 
     # my_rds = rds.Redis(host=redis_endpoint[0], port=redis_endpoint[1])
