@@ -18,117 +18,118 @@ import os
 
 redis_endpoint = (os.getenv("REDISIPADDR"), int(os.getenv("REDISPORT")))
 print(redis_endpoint)
+IPADDR = (os.getenv("IPADDR"))
 news1 = [
     {
         "Date": "2023/6/15",
         "Title": "【重要】新曲リリース＆生放送決定！",
         "Description": "皆様への感謝の気持ちを込めて、新曲のCD発売が決定しました！さらに、リリース記念として生放送も行います。お楽しみに！",
-        "Url": "http://192.168.64.15/news/news1"
+        "Url": IPADDR + "/news/news1"
     },
     {
         "Date": "2023/6/18",
         "Title": "🎵 サマーフェス開催決定！",
         "Description": "熱い夏を盛り上げるため、サマーフェスを開催します！多彩なバンドが出演予定です。お見逃しなく！",
-        "Url": "http://192.168.64.15/news/news2"
+        "Url": IPADDR + "/news/news2"
     },
     {
         "Date": "2023/6/22",
         "Title": "【ライブ情報】全国ツアー開催中！",
         "Description": "全国各地をまわるツアーを開催中です！新曲も披露しますので、ぜひ会場にお越しください！",
-        "Url": "http://192.168.64.15/news/news3"
+        "Url": IPADDR + "/news/news3"
     },
     {
         "Date": "2023/6/25",
         "Title": "🎉 ファン感謝イベント開催のお知らせ",
         "Description": "ファンの皆様への感謝を込めたイベントを開催します！特典やサプライズが満載です。お楽しみに！",
-        "Url": "http://192.168.64.15/news/news4"
+        "Url": IPADDR + "/news/news4"
     },
     {
         "Date": "2023/6/28",
         "Title": "【重要】メンバーサプライズ生誕祭開催！",
         "Description": "メンバーの誕生日をお祝いするスペシャルイベントを行います！お誕生日サプライズも要チェックです。",
-        "Url": "http://192.168.64.15/news/news5"
+        "Url": IPADDR + "/news/news5"
     },
     {
         "Date": "2023/7/2",
         "Title": "🎶 新アルバム制作進行中！",
         "Description": "新しいアルバムの制作が進行中です！新たな音楽で皆様を魅了します。",
-        "Url": "http://192.168.64.15/news/news6"
+        "Url": IPADDR + "/news/news6"
     },
     {
         "Date": "2023/7/5",
         "Title": "【チケット発売情報】次回ライブ開催決定！",
         "Description": "次回のライブ開催が決定しました！チケットの発売は近日中に開始します。",
-        "Url": "http://192.168.64.15/news/news7"
+        "Url": IPADDR + "/news/news7"
     },
     {
         "Date": "2023/7/9",
         "Title": "✨ 10周年記念ライブ開催！",
         "Description": "バンド結成10周年を記念してスペシャルライブを開催します！これまでの感謝を込めて、特別な演出も予定しています。",
-        "Url": "http://192.168.64.15/news/news8"
+        "Url": IPADDR + "/news/news8"
     },
     {
         "Date": "2023/7/12",
         "Title": "【お知らせ】メンバーグッズ新発売！",
         "Description": "新しいメンバーグッズの発売が決定しました！限定アイテムもありますのでお見逃しなく。",
-        "Url": "http://192.168.64.15/news/news9"
+        "Url": IPADDR + "/news/news9"
     },
     {
         "Date": "2023/7/15",
         "Title": "🎤 ソロコンサート開催決定！",
         "Description": "メンバーのソロコンサートを開催します！それぞれの個性が輝くスペシャルなステージになること間違いなし。",
-        "Url": "http://192.168.64.15/news/news10"
+        "Url": IPADDR + "/news/news10"
     }
 ]
 news2 = [
     {
         "Date":"2023/6/15", "Title":"【重要】新曲リリース＆生放送決定！",
         "Description":"""皆様への感謝の気持ちを込めて、新曲のCD発売が決定しました！さらに、リリース記念として生放送も行います。お楽しみに！""",
-        "Url":"http://192.168.64.15/news/news11"
+        "Url":IPADDR + "/news/news11"
     },
     {
         "Date":"2023/7/2", "Title":"ライブイベント開催のお知らせ",
         "Description":"""今年もやってきました！私たちのライブイベントが7月15日に開催されます。新曲の披露や特別なパフォーマンスをお見逃しなく！""",
-        "Url":"http://192.168.64.15/news/news12"},
+        "Url":IPADDR + "/news/news12"},
     {
         "Date":"1994/8/10", "Title":"新アルバム『夢幻の旅』発売決定！",
         "Description":""""待望の新アルバム『夢幻の旅』が9月1日に発売されます。全曲ライブで披露する予定ですので、ぜひお楽しみに！""",
-        "Url":"http://192.168.64.15/news/news13"
+        "Url":IPADDR + "/news/news13"
     },
     {
         "Date":"2022/9/5", "Title":"生放送のお知らせ！",
         "Description":"""9月20日に特別な生放送があります。新曲の初披露やメンバーとのトークが盛りだくさん！お見逃しなく！""",
-        "Url":"http://192.168.64.15/news/news14"
+        "Url":IPADDR + "/news/news14"
     },
     {
         "Date":"2022/10/1", "Title":"ライブツアー開催決定！",
         "Description":"""全国ツアーの開催が決定しました！各地で熱いパフォーマンスをお届けします。日程とチケット情報は公式サイトをご確認ください。""",
-        "Url":"http://192.168.64.15/news/news15"
+        "Url":IPADDR + "/news/news15"
     },
     {
         "Date":"2022/10/20", "Title":"CDリリース記念イベントのお知らせ",
         "Description":"""新アルバムのリリースを記念して、11月5日にイベントを開催します！メンバーとの握手会や特典付きのCD購入が可能です。""",
-        "Url":"http://192.168.64.15/news/news16"
+        "Url":IPADDR + "/news/news16"
     },
     {
         "Date":"2022/11/15", "Title":"新曲「夢の翼」のCD発売が決定しました！",
         "Description":"""待望の新曲「夢の翼」のCDが12月1日に発売されます。心躍るメロディと感動の歌詞をお楽しみください！""",
-        "Url":"http://192.168.64.15/news/news17"
+        "Url":IPADDR + "/news/news17"
     },
     {
         "Date":"2022/1/5", "Title":"生放送スペシャルイベント開催決定！",
         "Description":"""新年を迎え、1月20日に生放送スペシャルイベントを行います。新曲のステージパフォーマンスやメンバーの生トークをお届けします。""",
-        "Url":"http://192.168.64.15/news/news18"
+        "Url":IPADDR + "/news/news18"
     },
     {
         "Date":"2023/2/10", "Title": "ライブツアー追加公演のお知らせ",
         "Description":"""大好評につき、ライブツアーの追加公演が決定しました！追加公演の詳細やチケットの販売情報は公式サイトでご確認ください。""",
-        "Url":"http://192.168.64.15/news/news19"
+        "Url":IPADDR + "/news/news19"
     },
     {
         "Date":"2023/3/15", "Title": "新曲MV公開＆CD発売情報",
         "Description":"""新曲「未来への一歩」のMVが完成しました！さらに、CDの発売も同時に決定しましたので、ぜひチェックしてください。""",
-        "Url":"http://192.168.64.15/news/news20"
+        "Url":IPADDR + "/news/news20"
     }
 ]
 
@@ -228,6 +229,12 @@ def news(user:UserModel):
         print(level)
     
     return res_list
+
+@app.get("/Noun")
+async def get_noun(uid: str="yamasita"):
+    my_rds = rds.Redis(host=redis_endpoint[0], port=redis_endpoint[1])
+    user_words = [word.decode() for word in my_rds.lrange(uid, 0, -1)]
+    return user_words
 
 @app.post("/Register")
 def register(data:RegisterModel):
