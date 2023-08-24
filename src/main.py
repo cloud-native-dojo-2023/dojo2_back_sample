@@ -147,6 +147,10 @@ app.add_middleware(
 class UserModel(BaseModel):
     UID:str
 
+class RegisterModel(BaseModel):
+    UID:str
+    HASH:str
+
 
 @app.post("/News")
 def news(user:UserModel):
@@ -231,6 +235,19 @@ async def get_noun(uid: str="yamasita"):
     my_rds = rds.Redis(host=redis_endpoint[0], port=redis_endpoint[1])
     user_words = [word.decode() for word in my_rds.lrange(uid, 0, -1)]
     return user_words
+
+@app.post("/Register")
+def register(data:RegisterModel):
+    my_rds = rds.Redis(host=redis_endpoint[0], port=redis_endpoint[1])
+    news_hash = data.HASH
+    uid = data.UID
+
+    worddata = my_rds.hget(news_hash,'Noun').decode()
+    my_rds.rpush(uid,worddata)
+
+    print([v.decode() for v in my_rds.lrange(uid,0,-1)])
+
+    return data
 
 def time_weight(max_day, x):
     if max_day <= x:
