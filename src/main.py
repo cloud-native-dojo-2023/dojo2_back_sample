@@ -192,7 +192,7 @@ def news(user:UserModel):
     all_news_ranked = my_rds.zrevrange('NewsRank',0,-1, withscores=True)
     all_description = [{'Title':my_rds.hget(v,'Title').decode(), 'Noun':my_rds.hget(v,'Noun').decode(), 'URL':my_rds.hget(v,'Url').decode(), 'Date':datetime.datetime.fromtimestamp(t).strftime("%Y-%m-%d"), 'Hash': v.decode()} for v,t in all_news_ranked]
 
-    doc_dict_list = [{'Title':None, 'Noun':mrp_serialize, 'URL':None, 'Date':datetime.datetime.now().strftime("%Y-%m-%d"), 'Hash':None}] + all_description
+    doc_dict_list = [{'Title':None, 'Noun':mrp_serialize, 'URL':None, 'Date':datetime.datetime.now(), 'Hash':None}] + all_description
     doc_list = [v['Noun'] for v in doc_dict_list]
 
     res_list = [{'Title':v['Title'], 'level':0, 'URL':v['URL'], 'Hash':v['Hash'], 'Date':v['Date'], 'ruijido':'0.0000'} for v in doc_dict_list[1:]]
@@ -224,6 +224,7 @@ def news(user:UserModel):
             level = 4
         else:
             level = 5
+        res_list[i]['Date'] = res_list[i]['Date'].strftime("%Y-%m-%d")
         res_list[i]['level'] = level
         res_list[i]['ruijido'] = format(v, '.4f')
         print(level)
