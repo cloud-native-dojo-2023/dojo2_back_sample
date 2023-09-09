@@ -204,7 +204,7 @@ def news(user:UserModel):
     ruijido = [v for v in cosine_similarity(Xarray)[0][1:]]
     if abs(max(ruijido) - min(ruijido)) <= 0:
         ruijido = [1 for v in ruijido]
-    time_passed = [(datetime.datetime.now()-t['Date']).days for t in doc_dict_list[1:]]
+    time_passed = [(datetime.datetime.now()-datetime.datetime.strptime(t['Date'],"%Y-%m-%d")).days for t in doc_dict_list[1:]]
     time_weighted = [v*time_weight(365,t) for v, t in zip(ruijido, time_passed)]
 
     print(time_weighted)
