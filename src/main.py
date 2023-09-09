@@ -190,12 +190,12 @@ def news(user:UserModel):
     
     #ハッシュをランキングにしたもので日時でソートする
     all_news_ranked = my_rds.zrevrange('NewsRank',0,-1, withscores=True)
-    all_description = [{'Title':my_rds.hget(v,'Title').decode(), 'Noun':my_rds.hget(v,'Noun').decode(), 'URL':my_rds.hget(v,'Url').decode(), 'Date':datetime.datetime.fromtimestamp(t), 'Hash': v.decode()} for v,t in all_news_ranked]
+    all_description = [{'Title':my_rds.hget(v,'Title').decode(), 'Noun':my_rds.hget(v,'Noun').decode(), 'URL':my_rds.hget(v,'Url').decode(), 'Date':datetime.datetime.fromtimestamp(t).strftime("%Y-%m-%d"), 'Hash': v.decode()} for v,t in all_news_ranked]
 
     doc_dict_list = [{'Title':None, 'Noun':mrp_serialize, 'URL':None, 'Date':datetime.datetime.now(), 'Hash':None}] + all_description
     doc_list = [v['Noun'] for v in doc_dict_list]
 
-    res_list = [{'Title':v['Title'], 'level':0, 'URL':v['URL'], 'Hash':v['Hash'], 'Date':v['Date'], 'ruijido':0} for v in doc_dict_list[1:]]
+    res_list = [{'Title':v['Title'], 'level':0, 'URL':v['URL'], 'Hash':v['Hash'], 'Date':v['Date'], 'ruijido':'0.0000'} for v in doc_dict_list[1:]]
 
     X = tfidf.fit_transform(doc_list)
 
@@ -204,7 +204,7 @@ def news(user:UserModel):
     ruijido = [v for v in cosine_similarity(Xarray)[0][1:]]
     if abs(max(ruijido) - min(ruijido)) <= 0:
         ruijido = [1 for v in ruijido]
-    time_passed = [(datetime.datetime.now()-t['Date']).days for t in doc_dict_list[1:]]
+    time_passed = [(datetime.datetime.now()-datetime.datetime.strptime(t['Date'],"%Y-%m-%d")).days for t in doc_dict_list[1:]]
     time_weighted = [v*time_weight(365,t) for v, t in zip(ruijido, time_passed)]
 
     print(time_weighted)
@@ -224,8 +224,9 @@ def news(user:UserModel):
             level = 4
         else:
             level = 5
+        res_list[i]['Date'] = res_list[i]['Date']
         res_list[i]['level'] = level
-        res_list[i]['ruijido'] = v
+        res_list[i]['ruijido'] = format(v, '.4f')
         print(level)
     
     return res_list
