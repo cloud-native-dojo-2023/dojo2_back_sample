@@ -224,7 +224,7 @@ def news(user:UserModel):
             level = 4
         else:
             level = 5
-        res_list[i]['Date'] = res_list[i]['Date'].strftime("%Y-%m-%d")
+        res_list[i]['Date'] = res_list[i]['Date']
         res_list[i]['level'] = level
         res_list[i]['ruijido'] = format(v, '.4f')
         print(level)
