@@ -12,7 +12,7 @@ RUN pip3 install --upgrade pip && \
     apt-get install -y libmecab-dev && \
     apt-get install -y mecab-ipadic-utf8
 
-EXPOSE 8000
+#EXPOSE 8000
 
 #CMD python /app/src/main.py ${END_POINT} ${PORT}
-ENTRYPOINT ["python", "/app/src/main.py"]
+#ENTRYPOINT ["python", "/app/src/main.py"]
