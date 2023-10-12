@@ -189,7 +189,7 @@ def news(user:UserModel):
 
     
     #ハッシュをランキングにしたもので日時でソートする
-    all_news_ranked = my_rds.zrevrange('NewsRank',0,-1, withscores=True)
+    all_news_ranked = my_rds.zrevrange('NewsRank',0,10, withscores=True)
     all_description = [{'Title':my_rds.hget(v,'Title').decode(), 'Noun':my_rds.hget(v,'Noun').decode(), 'URL':my_rds.hget(v,'Url').decode(), 'Date':datetime.datetime.fromtimestamp(t).strftime("%Y-%m-%d"), 'Hash': v.decode()} for v,t in all_news_ranked]
 
     doc_dict_list = [{'Title':None, 'Noun':mrp_serialize, 'URL':None, 'Date':datetime.datetime.now(), 'Hash':None}] + all_description
