@@ -217,13 +217,13 @@ def news(user:UserModel):
     for i, _v in enumerate(time_weighted):
         level = 0
         v = (_v - min_ruijido)/(max_ruijido - min_ruijido)
-        if 80 <= v <= 100:
+        if 0.8 <= v <= 1:
             level = 1
-        elif 60 <= v < 80:
+        elif 0.6 <= v < 0.8:
             level = 2
-        elif 40 <= v < 60:
+        elif 0.4 <= v < 0.6:
             level = 3
-        elif 20 <= v < 40:
+        elif 0.2 <= v < 0.4:
             level = 4
         else:
             level = 5
