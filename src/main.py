@@ -211,18 +211,19 @@ def news(user:UserModel):
 
     max_ruijido = max(time_weighted)
     min_ruijido = min(time_weighted)
-    max_ruijido_quartor = max_ruijido/4
+
+    #分割数おかしい
 
     for i, _v in enumerate(time_weighted):
         level = 0
         v = (_v - min_ruijido)/(max_ruijido - min_ruijido)
-        if (max_ruijido_quartor*4) <= v:
+        if 80 <= v <= 100:
             level = 1
-        elif (max_ruijido_quartor*3) <= v < (max_ruijido_quartor*4):
+        elif 60 <= v < 80:
             level = 2
-        elif (max_ruijido_quartor*2) <= v < (max_ruijido_quartor*3):
+        elif 40 <= v < 60:
             level = 3
-        elif (max_ruijido_quartor) <= v < (max_ruijido_quartor*2):
+        elif 20 <= v < 40:
             level = 4
         else:
             level = 5
