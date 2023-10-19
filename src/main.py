@@ -210,6 +210,7 @@ def news(user:UserModel):
     print(time_weighted)
 
     max_ruijido = max(time_weighted)
+    min_ruijido = min(time_weighted)
     max_ruijido_quartor = max_ruijido/4
 
     for i, v in enumerate(time_weighted):
@@ -226,7 +227,7 @@ def news(user:UserModel):
             level = 5
         res_list[i]['Date'] = res_list[i]['Date']
         res_list[i]['level'] = level
-        res_list[i]['ruijido'] = format(v, '.4f')
+        res_list[i]['ruijido'] = format((v - min_ruijido)/(max_ruijido - min_ruijido) , '.4f')
         print(level)
     
     return res_list
