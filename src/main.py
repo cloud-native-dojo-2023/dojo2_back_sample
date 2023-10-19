@@ -227,7 +227,7 @@ def news(user:UserModel):
             level = 5
         res_list[i]['Date'] = res_list[i]['Date']
         res_list[i]['level'] = level
-        res_list[i]['ruijido'] = format((v - min_ruijido)/(max_ruijido - min_ruijido) , '.4f')
+        res_list[i]['ruijido'] = format((v - min_ruijido)/(max_ruijido - min_ruijido) * 100), '.2f')
         print(level)
     
     return res_list
