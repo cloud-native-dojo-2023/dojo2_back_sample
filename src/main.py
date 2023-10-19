@@ -215,7 +215,7 @@ def news(user:UserModel):
 
     for i, _v in enumerate(time_weighted):
         level = 0
-        v = (_v - min_ruijido)/(max_ruijido - min_ruijido))
+        v = (_v - min_ruijido)/(max_ruijido - min_ruijido)
         if (max_ruijido_quartor*4) <= v:
             level = 1
         elif (max_ruijido_quartor*3) <= v < (max_ruijido_quartor*4):
