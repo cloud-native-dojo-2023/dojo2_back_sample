@@ -297,7 +297,7 @@ def main():
 
     my_rds.flushdb()
     redis_initialize()
-    ur = UserRegister.UserRegister(redis_endpoint[0],redis_endpoint[1],["yamasita", "tarou", "hanako"])
+    ur = UserRegister.UserRegister(redis_endpoint[0],redis_endpoint[1],["yamasita", "tarou", "hanako"], init_nounss=[["コツメカワウソ 赤ちゃん 4 男の子 1 女の子 3 後日 名前 募集 応募 ","今年 元気 ペンギン 赤ちゃん 後日 名前 募集 応募 ","アシカ ショー 4 月 6 予定 ","4 月 7 イルカ ショー 予定 スタジアム 入場 制限 自由 観覧 ","4 月 7 イルカ ショー 予定 スタジアム 入場 制限 自由 観覧 "], ["コツメカワウソ 赤ちゃん 4 男の子 1 女の子 3 後日 名前 募集 応募 ","今年 元気 ペンギン 赤ちゃん 後日 名前 募集 応募 ","アシカ ショー 4 月 6 予定 ","4 月 7 イルカ ショー 予定 スタジアム 入場 制限 自由 観覧 ","4 月 7 イルカ ショー 予定 スタジアム 入場 制限 自由 観覧 "], ["コツメカワウソ 赤ちゃん 4 男の子 1 女の子 3 後日 名前 募集 応募 ","今年 元気 ペンギン 赤ちゃん 後日 名前 募集 応募 ","アシカ ショー 4 月 6 予定 ","4 月 7 イルカ ショー 予定 スタジアム 入場 制限 自由 観覧 ","4 月 7 イルカ ショー 予定 スタジアム 入場 制限 自由 観覧 "]])
     ur.register_user()
 
     # my_rds = rds.Redis(host=redis_endpoint[0], port=redis_endpoint[1])
