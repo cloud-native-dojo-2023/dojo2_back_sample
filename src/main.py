@@ -250,6 +250,19 @@ async def get_noun(uid: str="yamasita"):
     user_words = [word.decode() for word in my_rds.lrange(uid, 0, -1)]
     return user_words
 
+@app.get("/Reset")
+async def reset_noun(uid: str="yamasita"):
+    my_rds = rds.Redis(host=redis_endpoint[0], port=redis_endpoint[1])
+    pipe = my_rds.pipeline()
+    pipe.rpush(uid, "コツメカワウソ 赤ちゃん 4 男の子 1 女の子 3 後日 名前 募集 応募 ")
+    pipe.rpush(uid, "今年 元気 ペンギン 赤ちゃん 後日 名前 募集 応募 ")
+    pipe.rpush(uid, "アシカ ショー 4 月 6 予定 ")
+    pipe.rpush(uid, "4 月 7 イルカ ショー 予定 スタジアム 入場 制限 自由 観覧 ")
+    pipe.rpush(uid, "4 月 7 イルカ ショー 予定 スタジアム 入場 制限 自由 観覧 ")
+    pipe.ltrim(uid, -5, -1)
+    res = pipe.execute()
+    return res
+
 @app.post("/Register")
 def register(data:RegisterModel):
     my_rds = rds.Redis(host=redis_endpoint[0], port=redis_endpoint[1])
