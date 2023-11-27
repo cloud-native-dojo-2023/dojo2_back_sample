@@ -19,16 +19,3 @@ class UserRegister:
 
         my_rds_pipe.execute()
 
-class AddNoun:
-    def __init__(self, user_name, host, port, nouns=[]) -> None:
-        self.user_name = user_name
-        self.nouns = nouns
-        self.host = host
-        self.port = port
-    def AddNoun(self):
-        my_rds = rds.Redis(host=self.host, port=self.port)
-        my_rds_pipe = my_rds.pipeline()
-        for noun in self.nouns:
-            my_rds_pipe.rpush(self.user_name, noun)
-        my_rds_pipe.execute()
-
